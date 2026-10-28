@@ -201,6 +201,8 @@ button {
   align-items: center;
   color: #a0adc3;
   font-size: 12px;
+  min-height: 40px;
+  line-height: 1.2;
 }
 
 .stat-card > strong {
@@ -498,4 +500,18 @@ footer {
     width: 100%;
     justify-content: space-between;
   }
+}
+
+/* added */
+.stat-top {
+  min-height: 40px;
+}
+
+.stat-card > strong {
+  line-height: 1;
+}
+
+.stat-card small {
+  display: block;
+  line-height: 1.4;
 }
