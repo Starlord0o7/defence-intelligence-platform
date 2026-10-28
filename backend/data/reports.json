@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "title": "Severe Weather Disrupts Transport",
+    "category": "Weather",
+    "location": "Demo Region A",
+    "source": "Synthetic demonstration data",
+    "summary": "Heavy rainfall has disrupted transport in a fictional region.",
+    "priority": "High"
+  },
+  {
+    "id": 2,
+    "title": "Emergency Services Issue Advisory",
+    "category": "Public Safety",
+    "location": "Demo Region A",
+    "source": "Synthetic demonstration data",
+    "summary": "Local services advise residents to follow official safety updates.",
+    "priority": "Medium"
+  },
+  {
+    "id": 3,
+    "title": "Infrastructure Operating Normally",
+    "category": "Infrastructure",
+    "location": "Demo Region B",
+    "source": "Synthetic demonstration data",
+    "summary": "A fictional report describes normal infrastructure operations.",
+    "priority": "Low"
+  }
+]

@@ -2,6 +2,9 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from analysis import analyze
+from data_store import load_reports
+
 app = FastAPI(
     title="Defence Intelligence & Threat Analysis Platform",
     version="0.1.0"
@@ -16,36 +19,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Synthetic data for demonstration purposes only
-reports = [
-    {
-        "id": 1,
-        "title": "Severe Weather Disrupts Transport",
-        "category": "Weather",
-        "location": "Demo Region A",
-        "source": "Synthetic demonstration data",
-        "summary": "Heavy rainfall has disrupted transport in a fictional region.",
-        "priority": "High"
-    },
-    {
-        "id": 2,
-        "title": "Emergency Services Issue Advisory",
-        "category": "Public Safety",
-        "location": "Demo Region A",
-        "source": "Synthetic demonstration data",
-        "summary": "Local services advise residents to follow official safety updates.",
-        "priority": "Medium"
-    },
-    {
-        "id": 3,
-        "title": "Infrastructure Operating Normally",
-        "category": "Infrastructure",
-        "location": "Demo Region B",
-        "source": "Synthetic demonstration data",
-        "summary": "A fictional report describes normal infrastructure operations.",
-        "priority": "Low"
-    }
-]
+# Synthetic demonstration data, loaded and validated from data/reports.json
+reports = load_reports()
 
 
 @app.get("/")
@@ -115,13 +90,4 @@ def analyze_report(report_id: int):
     if report is None:
         raise HTTPException(status_code=404, detail="Report not found")
 
-    return {
-        "report_id": report_id,
-        "title": report["title"],
-        "priority": report["priority"],
-        "method": "Demo rules-based analysis",
-        "limitations": (
-            "Demonstration only; this is not a validated AI prediction "
-            "or real intelligence assessment."
-        )
-    }
+    return analyze(report)
