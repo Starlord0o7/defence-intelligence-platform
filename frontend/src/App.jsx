@@ -236,17 +236,40 @@ function App() {
               <p>Running demonstration analysis...</p>
             ) : analysis ? (
               <>
-                <p>
-                  <strong>Priority:</strong>{" "}
-                  {analysis.priority ?? selectedReport.priority}
-                </p>
-                <p>
-                  <strong>Method:</strong>{" "}
-                  {analysis.method ?? "Unavailable"}
-                </p>
-                <p className="analysis-limit">
-                  {analysis.limitations}
-                </p>
+               
+                <div className="analysis-results">
+                  <p>
+                    <strong>Priority:</strong>{" "}
+                    {analysis.priority ?? selectedReport.priority}
+                  </p>
+
+                  <p>
+                    <strong>Risk Score:</strong>{" "}
+                    {analysis.risk_score ?? "Unavailable"}/100
+                  </p>
+
+                  <p>
+                    <strong>Matched Keywords:</strong>{" "}
+                    {analysis.matched_keywords?.length
+                      ? analysis.matched_keywords.join(", ")
+                      : "None"}
+                  </p>
+
+                  <p>
+                    <strong>Reasoning:</strong>{" "}
+                    {analysis.reasoning ?? "Unavailable"}
+                  </p>
+
+                  <p>
+                    <strong>Method:</strong>{" "}
+                    {analysis.method ?? "Unavailable"}
+                  </p>
+
+                  <p className="analysis-limit">
+                    {analysis.limitations}
+                  </p>
+                </div>
+
               </>
             ) : null}
           </section>
