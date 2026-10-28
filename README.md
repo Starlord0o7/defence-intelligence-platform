@@ -76,7 +76,7 @@ uvicorn main:app --reload --port 8000
 
 ### 4. Run the Frontend
 
-Open a second Terminal window and run:
+Open a second Terminal window:
 
 ```bash
 cd ~/defence-intelligence-platform/frontend
@@ -86,7 +86,7 @@ npm run dev
 
 Open the local URL displayed by Vite in the Terminal.
 
-## API Example
+### 5. API Example
 
 To analyse report ID `1`, run:
 
@@ -96,9 +96,7 @@ curl -X POST http://127.0.0.1:8000/analyze/1
 
 The API response includes analysis information such as priority, risk score, matched keywords, and reasoning.
 
-## Running Tests
-
-From a Terminal, run:
+### 6. Running Tests
 
 ```bash
 cd ~/defence-intelligence-platform/backend
