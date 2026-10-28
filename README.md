@@ -18,11 +18,9 @@ The current analysis engine uses predefined keyword-based rules for demonstratio
 
 ## Technology Stack
 
-**Frontend:** React, Vite, JavaScript, CSS
-
-**Backend:** Python, FastAPI
-
-**Testing:** Pytest
+- **Frontend:** React, Vite, JavaScript, CSS
+- **Backend:** Python, FastAPI
+- **Testing:** Pytest
 
 ## Project Structure
 
@@ -49,14 +47,14 @@ defence-intelligence-platform/
 
 Install Node.js with npm and Python 3.
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/Starlord0o7/defence-intelligence-platform.git
 cd defence-intelligence-platform
 ```
 
-### 2. Set up the backend
+### 2. Set Up the Backend
 
 ```bash
 cd backend
@@ -65,21 +63,20 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. Run the backend
+### 3. Run the Backend
 
-From the `backend` directory:
+From the `backend` directory, run:
 
 ```bash
 uvicorn main:app --reload --port 8000
 ```
 
-Backend health check: http://127.0.0.1:8000/health
+- **Health check:** http://127.0.0.1:8000/health
+- **Interactive API documentation:** http://127.0.0.1:8000/docs
 
-Interactive API documentation: http://127.0.0.1:8000/docs
+### 4. Run the Frontend
 
-### 4. Run the frontend
-
-Open a second Terminal window:
+Open a second Terminal window and run:
 
 ```bash
 cd ~/defence-intelligence-platform/frontend
@@ -87,11 +84,11 @@ npm install
 npm run dev
 ```
 
-Open the local URL displayed in the Terminal by Vite.
+Open the local URL displayed by Vite in the Terminal.
 
 ## API Example
 
-To analyse report ID 1:
+To analyse report ID `1`, run:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/analyze/1
@@ -100,6 +97,8 @@ curl -X POST http://127.0.0.1:8000/analyze/1
 The API response includes analysis information such as priority, risk score, matched keywords, and reasoning.
 
 ## Running Tests
+
+From a Terminal, run:
 
 ```bash
 cd ~/defence-intelligence-platform/backend
