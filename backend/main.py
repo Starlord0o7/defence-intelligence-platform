@@ -1,4 +1,11 @@
+import uuid
 
+from pathlib import Path
+from fastapi import UploadFile, File
+from document_processor import extract_text, split_into_chunks
+from vector_store import add_chunks
+from pydantic import BaseModel
+from rag_service import ask_question
 from analysis import analyze
 from data_store import load_reports
 from fastapi import FastAPI, HTTPException
@@ -23,7 +30,8 @@ app.add_middleware(
 
 # Synthetic data for demonstration purposes only
 reports = load_reports()
-
+class AskRequest(BaseModel):
+    question: str
 @app.get("/")
 def home():
     return {
@@ -92,3 +100,84 @@ def analyze_report(report_id: int):
         raise HTTPException(status_code=404, detail="Report not found")
 
     return analyze(report)
+
+
+@app.post("/ask")
+def ask(request: AskRequest):
+    if not request.question.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Question cannot be empty."
+        )
+
+    try:
+        return ask_question(request.question)
+    except Exception as error:
+        raise HTTPException(
+            status_code=500,
+            detail=f"RAG processing failed: {str(error)}"
+        )
+
+@app.post("/documents/upload")
+async def upload_document(file: UploadFile = File(...)):
+
+    allowed_extensions = {".pdf", ".txt"}
+
+    filename = Path(file.filename or "").name
+    extension = Path(filename).suffix.lower()
+
+    if extension not in allowed_extensions:
+        raise HTTPException(
+            status_code=400,
+            detail="Only PDF and TXT files are supported."
+        )
+
+    content = await file.read()
+
+    if not content:
+        raise HTTPException(
+            status_code=400,
+            detail="Uploaded file is empty."
+        )
+
+    if len(content) > 10 * 1024 * 1024:
+        raise HTTPException(
+            status_code=413,
+            detail="File size must not exceed 10 MB."
+        )
+
+    document_id = str(uuid.uuid4())
+    temp_path = Path(__file__).parent / f"temp_{document_id}{extension}"
+
+    try:
+        temp_path.write_bytes(content)
+
+        text = extract_text(str(temp_path))
+        chunks = split_into_chunks(text)
+
+        stored_count = add_chunks(
+            document_id=document_id,
+            filename=filename,
+            chunks=chunks
+        )
+
+        return {
+            "message": "Document uploaded and processed successfully.",
+            "document_id": document_id,
+            "filename": filename,
+            "chunks_stored": stored_count
+        }
+
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error))
+
+    except Exception:
+        raise HTTPException(
+            status_code=500,
+            detail="Document processing failed."
+        )
+
+    finally:
+        if temp_path.exists():
+            temp_path.unlink()
+
