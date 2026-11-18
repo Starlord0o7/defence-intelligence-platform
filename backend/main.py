@@ -3,9 +3,11 @@ import uuid
 from pathlib import Path
 from fastapi import UploadFile, File
 from document_processor import extract_text, split_into_chunks
-from vector_store import add_chunks
+from vector_store import add_chunks, add_processed_chunks
+from data_processing import process_document, to_vector_store_records
 from pydantic import BaseModel
 from rag_service import ask_question
+from vector_store import list_documents
 from analysis import analyze
 from data_store import load_reports
 from fastapi import FastAPI, HTTPException
@@ -152,32 +154,55 @@ async def upload_document(file: UploadFile = File(...)):
     try:
         temp_path.write_bytes(content)
 
-        text = extract_text(str(temp_path))
-        chunks = split_into_chunks(text)
+        result = process_document(str(temp_path), filename=filename)
+        records = to_vector_store_records(result, document_id)
 
-        stored_count = add_chunks(
+        stored_count = add_processed_chunks(
             document_id=document_id,
-            filename=filename,
-            chunks=chunks
+            records=records
         )
 
         return {
-            "message": "Document uploaded and processed successfully.",
+            "message": "Document processed and indexed successfully.",
             "document_id": document_id,
             "filename": filename,
+            "date": result["date"],
+            "category": result["category"],
+            "page_count": result["page_count"],
+            "threat_assessment": {
+                "risk_score": result["risk"]["risk_score"],
+                "priority": result["risk"]["priority"],
+                "matched_keywords": result["risk"]["matched_keywords"],
+                "negated_keywords": result["risk"]["negated_keywords"],
+                "reasoning": result["risk"]["reasoning"]
+            },
             "chunks_stored": stored_count
         }
 
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error))
 
-    except Exception:
+    except Exception as error:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=500,
-            detail="Document processing failed."
+            detail=f"Document processing failed: {str(error)}"
         )
 
     finally:
         if temp_path.exists():
             temp_path.unlink()
+
+@app.get("/documents")
+def get_documents():
+    try:
+        return {
+            "documents": list_documents()
+        }
+    except Exception:
+        raise HTTPException(
+            status_code=500,
+            detail="Could not retrieve documents."
+        )
 

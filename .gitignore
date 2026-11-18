@@ -1,12 +1,26 @@
+
+# macOS
 .DS_Store
+
+# Environment variables and secrets
 .env
+**/.env
+
+# Python virtual environments and cache
 .venv/
 __pycache__/
 *.py[cod]
+.pytest_cache/
+
+# Frontend dependencies and build output
 node_modules/
 dist/
-# Local RAG database and uploaded files
-backend/chroma_db/
+
+# Local ChromaDB databases and backups
+backend/chroma_db*/
 backend/uploads/
 backend/temp_*
 
+# Local backup files
+backend/main_before_shalini.py
+*.bak

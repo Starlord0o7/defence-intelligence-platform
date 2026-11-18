@@ -1,26 +1,36 @@
-from google import genai
-from google.genai import types
 
-from gemini_service import api_key
+from sentence_transformers import SentenceTransformer
 
-client = genai.Client(api_key=api_key)
+# Local embedding model — no API key required.
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
-EMBEDDING_MODEL = "gemini-embedding-001"
+_model = None
 
 
-def generate_embedding(text: str, task_type: str = "RETRIEVAL_DOCUMENT") -> list[float]:
-    """Convert text into a numerical vector using Gemini."""
+def _get_model():
+    """Load the embedding model only when first needed."""
+    global _model
+
+    if _model is None:
+        _model = SentenceTransformer(EMBEDDING_MODEL, device="cpu")
+
+    return _model
+
+
+def generate_embedding(
+    text: str,
+    task_type: str = "RETRIEVAL_DOCUMENT"
+) -> list[float]:
+    """Convert text into a local numerical embedding."""
 
     if not text or not text.strip():
         raise ValueError("Text cannot be empty.")
 
-    response = client.models.embed_content(
-        model=EMBEDDING_MODEL,
-        contents=text,
-        config=types.EmbedContentConfig(
-            task_type=task_type
-        ),
+    model = _get_model()
+
+    embedding = model.encode(
+        text,
+        normalize_embeddings=True
     )
 
-    return response.embeddings[0].values
-
+    return embedding.tolist()
